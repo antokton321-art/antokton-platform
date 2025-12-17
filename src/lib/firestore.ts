@@ -166,24 +166,9 @@ export async function fetchUsers(pageSize = 50) {
 }
 
 export async function setUserRole(uid: string, role: Role) {
-  constt db = await getFirestore();
-  await updtateDoc(doc(db, 'users', uid), {
+  const db = await getFirestoreDb();
+  await updateDoc(doc(db, 'users', uid), {
     role,
     updatedAt: serverTimestamp()
   });
-}
-
-}
-export async function fetchModerationQueue(pageSize = 50) {
-  return [];
-}
-
-export async function approveReport(reportId: string) {
-  return;
-}
-
-export async function rejectReport(reportId: string) {
-  return;
-}
-
 }
