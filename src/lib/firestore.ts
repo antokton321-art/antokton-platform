@@ -165,16 +165,15 @@ export async function fetchUsers(pageSize = 50) {
   return snaps.docs.map((d) => ({ ...(d.data() as UserDoc) } as UserDoc));
 }
 
-eexport async function setUserRole(uid: string, role: Role) {
-  const db = await getFirestore();
-  await updateDoc(doc(db, 'users', uid), {
+export async function setUserRole(uid: string, role: Role) {
+  constt db = await getFirestore();
+  await updtateDoc(doc(db, 'users', uid), {
     role,
     updatedAt: serverTimestamp()
   });
 }
 
 }
-
 export async function fetchModerationQueue(pageSize = 50) {
   return [];
 }
