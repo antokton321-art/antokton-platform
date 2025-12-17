@@ -1,3 +1,33 @@
-export const LOCATIONS = [
-  'Remote', 'Europe', 'North America', 'Asia', 'South America', 'Africa'
-]
+export const COUNTRIES = [
+  'Belgjikë',
+  'Shqipëri',
+  'Kosovë',
+  'Maqedoni e Veriut',
+  'Gjermani',
+  'Francë',
+  'Hollandë',
+  'Itali',
+  'Zvicër',
+  'Suedi',
+  'Danimarkë',
+  'Irlandë',
+  'Spanjë',
+  'Portugali',
+  'Greqi',
+  'Kroaci',
+  'Austria',
+  'Britania e Madhe',
+  'Emiratet e Bashkuara Arabe',
+  'Arabia Saudite',
+  'Katar',
+  'Kuvajt',
+  'Bahrein',
+  'Oman',
+  'Turqi',
+  'Egjipt',
+  'Kanada',
+  'Australi',
+  'Tjetër'
+] as const;
+
+export type Country = (typeof COUNTRIES)[number];

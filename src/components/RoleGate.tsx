@@ -1,17 +1,48 @@
-"use client"
-import { useEffect, useState } from 'react'
-import { getCurrentUserRole } from '@/lib/auth'
+"use client";
 
-export default function RoleGate({ children, roles = [] }: { children: React.ReactNode; roles: string[] }){
-  const [ok,setOk]=useState<boolean|undefined>(undefined)
+import { useEffect, useState } from 'react';
+import { getFirebaseAuth } from '@/lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { getMyRole } from '@/lib/firestore';
+import type { Role } from '@/types';
+import Loading from '@/components/Loading';
 
-  useEffect(()=>{
-    let mounted=true
-    getCurrentUserRole().then(r=>{ if(mounted) setOk(roles.includes(r||'')) }).catch(()=>setOk(false))
-    return ()=>{ mounted=false }
-  },[roles.join(',')])
+export default function RoleGate({
+  allow,
+  children
+}: {
+  allow: (role: Role | null) => boolean;
+  children: (role: Role) => React.ReactNode;
+}) {
+  const [role, setRole] = useState<Role | null>(null);
+  const [ready, setReady] = useState(false);
 
-  if(ok===undefined) return <div>Checking role...</div>
-  if(!ok) return <div className="text-red-600">You do not have access to this page.</div>
-  return <>{children}</>
+  useEffect(() => {
+    let unsub: () => void;
+    getFirebaseAuth().then((auth) => {
+      unsub = onAuthStateChanged(auth, async (u) => {
+        setRole(null);
+        if (u?.uid) {
+          const r = await getMyRole(u.uid);
+          setRole(r);
+        }
+        setReady(true);
+      });
+    });
+    return () => {
+      if (unsub) unsub();
+    };
+  }, []);
+
+  if (!ready) return <Loading label="Duke kontrolluar të drejtat..." />;
+
+  if (!allow(role)) {
+    return (
+      <div className="rounded-lg border bg-white p-4 text-sm dark:bg-[#102141] dark:border-gray-700">
+        Aksesi i ndaluar.
+      </div>
+    );
+  }
+
+  return <>{children(role as Role)}</>;
 }

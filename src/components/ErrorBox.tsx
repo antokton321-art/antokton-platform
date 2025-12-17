@@ -1,3 +1,7 @@
-export default function ErrorBox({ children }: { children: React.ReactNode }){
-  return <div className="text-red-700 bg-red-50 border border-red-100 rounded p-3">{children}</div>
+export default function ErrorBox({ message }: { message: string }) {
+  return (
+    <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300">
+      {message}
+    </div>
+  );
 }

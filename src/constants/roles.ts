@@ -1,7 +1,4 @@
-export const ROLES = {
-  ADMIN: 'admin',
-  MODERATOR: 'moderator',
-  MEMBER: 'member',
-} as const
+import type { Role } from '@/types';
 
-export const ROLE_LIST = [ROLES.ADMIN, ROLES.MODERATOR, ROLES.MEMBER]
+export const ROLES: Role[] = ['admin', 'moderator', 'member'];
+export const ADMIN_EMAIL = 'antokton321@gmail.com';

@@ -1,24 +1,13 @@
-import PostCard from '@/components/PostCard'
-import PostEditor from '@/components/PostEditor'
-import { getFeed } from '@/lib/firestore'
-import { Suspense } from 'react'
+import Hero from '@/components/landing/Hero';
+import ModuleGrid from '@/components/landing/ModuleGrid';
+import ContactCTA from '@/components/landing/ContactCTA';
 
-export default async function Page() {
-  const posts = await getFeed({ limit: 20 })
-
+export default function HomePage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">Feed</h1>
-      <div className="mb-6">
-        {/* Post editor rendered on client */}
-        <PostEditor />
-      </div>
-
-      <div className="space-y-4">
-        {posts.map((p) => (
-          <PostCard key={p.id} post={p} />
-        ))}
-      </div>
-    </div>
-  )
+    <>
+      <Hero />
+      <ModuleGrid />
+      <ContactCTA />
+    </>
+  );
 }

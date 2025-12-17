@@ -1,8 +1,12 @@
-export function ensure<T>(v: T | null | undefined, msg = 'Missing value'): T {
-  if (v === null || v === undefined) throw new Error(msg)
-  return v
+export function cx(...classes: Array<string | undefined | null | false>) {
+  return classes.filter(Boolean).join(' ');
 }
 
-export function uid(){
-  return Math.random().toString(36).slice(2,9)
+export function toQueryString(params: Record<string, string | undefined>) {
+  const u = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v && v.trim().length) u.set(k, v);
+  });
+  const s = u.toString();
+  return s ? `?${s}` : '';
 }

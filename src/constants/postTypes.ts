@@ -1,7 +1,10 @@
-export const POST_TYPES = {
-  TEXT: 'text',
-  LINK: 'link',
-  QUESTION: 'question',
-}
+import type { PostType } from '@/types';
 
-export const POST_TYPE_LIST = Object.values(POST_TYPES)
+export const POST_TYPES: { value: PostType; label: string }[] = [
+  { value: 'pune', label: 'Punë' },
+  { value: 'shtepi', label: 'Shtëpi' },
+  { value: 'juridike', label: 'Juridike' },
+  { value: 'edukim', label: 'Edukim' },
+  { value: 'bamiresi', label: 'Bamirësi' },
+  { value: 'media', label: 'Media' }
+];
