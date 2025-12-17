@@ -2,10 +2,11 @@ import CommentList from '@/components/CommentList'
 import PostCard from '@/components/PostCard'
 import { getPostById } from '@/lib/firestore'
 
-export default async function PostPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const post = await getPostById(id);
+export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+    const post = await getPostById(id);
   if(!post) return <div className="card">Post not found</div>
+
 
   return (
     <div className="space-y-4">
