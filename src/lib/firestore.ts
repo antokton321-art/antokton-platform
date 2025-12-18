@@ -172,3 +172,45 @@ export async function setUserRole(uid: string, role: Role) {
     updatedAt: serverTimestamp()
   });
 }
+
+// Get a single post by ID
+export async function getPostById(id: string) {
+  const db = await getFirestoreDb();
+  const ref = doc(db, 'posts', id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as PostDoc & { id: string };
+}
+
+// Fetch moderation queue (reports pending review)
+export async function fetchModerationQueue(pageSize = 50) {
+  const db = await getFirestoreDb();
+  const q = query(
+    collection(db, 'reports'),
+    where('status', '==', 'pending'),
+    orderBy('createdAt', 'desc'),
+    limit(pageSize)
+  );
+  const snaps = await getDocs(q);
+  return snaps.docs.map(d => ({ id: d.id, ...d.data() } as ReportDoc & { id: string }));
+}
+
+// Approve a report (mark as resolved)
+export async function approveReport(reportId: string) {
+  const db = await getFirestoreDb();
+  const ref = doc(db, 'reports', reportId);
+  await updateDoc(ref, {
+    status: 'approved',
+    updatedAt: serverTimestamp()
+  });
+}
+
+// Reject a report
+export async function rejectReport(reportId: string) {
+  const db = await getFirestoreDb();
+  const ref = doc(db, 'reports', reportId);
+  await updateDoc(ref, {
+    status: 'rejected',
+    updatedAt: serverTimestamp()
+  });
+}
