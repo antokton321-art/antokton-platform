@@ -67,3 +67,7 @@ export async function logout() {
   const auth = await getFirebaseAuth();
   await signOut(auth);
 }
+
+// Aliases for backwards compatibility
+export const signInWithEmail = loginWithEmail;
+export const signUpWithEmail = registerWithEmail;
