@@ -1,4 +1,5 @@
 "use client"
+export const dynamic = "force-dynamic";
 import { useState } from 'react'
 import { signUpWithEmail } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
