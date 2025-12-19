@@ -73,11 +73,13 @@ export async function getFirestoreDb() {
 }
 
 // Export auth and db for backwards compatibility
-export let auth: Auth | null = null;
-export let db: Firestore | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 // Initialize for client-side
 if (typeof window !== 'undefined') {
   getFirebaseAuth().then(a => { auth = a; });
   getFirestoreDb().then(d => { db = d; });
 }
+
+export { auth, db };
