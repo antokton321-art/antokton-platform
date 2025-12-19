@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import AuthGate from '@/components/AuthGate';
 import PostEditor from '@/components/PostEditor';
