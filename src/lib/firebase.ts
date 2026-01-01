@@ -44,6 +44,7 @@ export async function getFirebaseApp() {
     throw new Error('Firebase client SDK cannot be used on the server.');
   }
   if (_app) return _app;
+
   const { initializeApp, getApp, getApps } = await import('firebase/app');
   const config = getPublicConfig();
   _app = getApps().length ? getApp() : initializeApp(config);
@@ -71,15 +72,3 @@ export async function getFirestoreDb() {
   _db = getFirestore(app);
   return _db;
 }
-
-// Export auth and db for backwards compatibility
-let auth: Auth | null = null;
-let db: Firestore | null = null;
-
-// Initialize for client-side
-if (typeof window !== 'undefined') {
-  getFirebaseAuth().then(a => { auth = a; });
-  getFirestoreDb().then(d => { db = d; });
-}
-
-export { auth, db };
