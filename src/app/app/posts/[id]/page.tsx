@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { auth } from '@/lib/firebase';
+import { getFirebaseAuth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Loading from '@/components/Loading';
 import ErrorBox from '@/components/ErrorBox';
@@ -38,19 +38,28 @@ export default function PostDetailPage() {
   const [role, setRole] = useState<Role | null>(null);
   const [uid, setUid] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   // Ndjek statusin e autentikimit për të marrë uid/email/rol
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      setUid(u?.uid ?? null);
-      setEmail(u?.email ?? null);
-      setRole(null);
-      if (u?.uid) {
-        const r = await getMyRole(u.uid);
-        setRole(r);
-      }
+    let unsub: (() => void) | undefined;
+    
+    getFirebaseAuth().then((auth) => {
+      unsub = onAuthStateChanged(auth, async (u) => {
+        setUid(u?.uid ?? null);
+        setEmail(u?.email ?? null);
+        setDisplayName(u?.displayName ?? null);
+        setRole(null);
+        if (u?.uid) {
+          const r = await getMyRole(u.uid);
+          setRole(r);
+        }
+      });
     });
-    return () => unsub();
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   // Ngarkon postimin dhe komentet
@@ -102,59 +111,6 @@ export default function PostDetailPage() {
         <div className="mt-4 whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">
           {post.content}
         </div>
+
         <div className="mt-4 flex flex-wrap gap-2">
-          {(isAuthor && post.status === 'pending') || staff ? (
-            <Link
-              className="rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:bg-transparent dark:hover:bg-[#0b1931]"
-              href={`/app/posts/${post.id}/edit`}
-            >
-              Redakto
-            </Link>
-          ) : null}
-          <button
-            className="rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:bg-transparent dark:hover:bg-[#0b1931]"
-            onClick={async () => {
-              if (!uid || !email) {
-                router.push('/login');
-                return;
-              }
-              await reportContent({
-                reporterId: uid,
-                reporterEmail: email,
-                targetType: 'post',
-                targetId: post.id,
-                postId: post.id,
-                reason: 'Raportuar nga përdoruesi.'
-              } as any);
-              alert('Raporti u dërgua.');
-            }}
-          >
-            Raporto
-          </button>
-        </div>
-      </div>
-      {/* Lista e komenteve */}
-      <CommentList comments={comments} />
-      {/* Komentuesi ose mesazh që kërkon login */}
-      {uid ? (
-        <CommentComposer
-          onSubmit={async (text) => {
-            await addComment(id, {
-              postId: id,
-              authorId: uid!,
-              authorEmail: email ?? '',
-              authorDisplayName: auth.currentUser?.displayName ?? null,
-              text
-            } as any);
-            const c = await fetchComments(id);
-            setComments(c);
-          }}
-        />
-      ) : (
-        <div className="rounded-lg border bg-white p-4 text-sm text-gray-700 dark:bg-[#102141] dark:border-gray-700 dark:text-gray-300">
-          Hyni për të komentuar.
-        </div>
-      )}
-    </div>
-  );
-}
+          {(isAuthor && post.status ===
