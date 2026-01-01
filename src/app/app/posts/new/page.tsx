@@ -4,7 +4,6 @@ export const dynamic = "force-dynamic";
 import AuthGate from '@/components/AuthGate';
 import PostEditor from '@/components/PostEditor';
 import { createPost } from '@/lib/firestore';
-import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import type { PostType } from '@/types';
 
@@ -15,6 +14,7 @@ import type { PostType } from '@/types';
  */
 export default function NewPostPage() {
   const router = useRouter();
+
   return (
     <AuthGate>
       {(user) => (
@@ -26,10 +26,10 @@ export default function NewPostPage() {
               moderatorët.
             </p>
           </div>
+
           <PostEditor
             submitLabel="Krijo (Pending)"
             onSubmit={async (values) => {
-              const u = auth.currentUser!;
               const id = await createPost({
                 type: values.type as PostType,
                 title: values.title,
@@ -37,9 +37,9 @@ export default function NewPostPage() {
                 country: values.country || undefined,
                 city: values.city || undefined,
                 profession: values.profession || undefined,
-                authorId: u.uid,
-                authorEmail: u.email!,
-                authorDisplayName: u.displayName ?? null
+                authorId: user.uid,
+                authorEmail: user.email!,
+                authorDisplayName: user.displayName ?? null
               } as any);
               router.push(`/app/posts/${id}`);
             }}
