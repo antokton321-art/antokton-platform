@@ -2,4 +2,9 @@
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
+},
+  "buildCommand": "",
+  "devCommand": "",
+  "installCommand": "",
+  "framework": null
 }
