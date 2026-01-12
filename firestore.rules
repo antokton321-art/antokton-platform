@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  /**
+   * Rregulla të thjeshta sigurie për platformën Antokton.
+   * Këto rregulla supozojnë se përdoruesit kanë një claim
+   * `role` (jobSeeker, employer, moderator, admin) në token e tyre të autentikimit.
+   * Të gjitha njoftimet e punës ruhen në koleksionin `jobs` dhe secili
+   * dokument ka fusha:
+   *  - postedBy: uid i përdoruesit që ka krijuar njoftimin
+   *  - status: "pending" ose "approved"
+   *  - approvedBy: listë uid‑sh moderatorësh që e kanë miratuar
+   *  - approvedCount: numri i moderatorëve që e kanë miratuar
+   */
+  match /databases/{database}/documents {
+    // Rregulla për koleksionin `users`
+    match /users/{uid} {
+      // Leximi është i lejuar vetëm për vetë përdoruesin
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Krijimi lejohet nëse përdoruesi po shkruan në dokumentin e vet
+      allow create: if request.auth != null && request.auth.uid == uid;
+      // Përditësimi i rolit lejohet vetëm për admin
+      allow update: if request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    // Rregulla për koleksionin `jobs`
+    match /jobs/{jobId} {
+      // Leximi: çdokush mund të lexojë njoftimet e miratuara.
+      // Klienti duhet të filtrojë njoftimet me status `approved`.
+      allow read: if true;
+
+      // Krijimi: vetëm përdoruesit e autentikuar mund të shtojnë njoftime
+      allow create: if request.auth != null;
+
+      // Përditësimi:
+      allow update: if request.auth != null && (
+        // Autori mund të ndryshojë njoftimin e vet nëse është ende në pritje
+        (resource.data.postedBy == request.auth.uid && resource.data.status == 'pending') ||
+        // Moderatorët mund të shtojnë uid‑n e tyre në listën e aprovimeve
+        (request.auth.token.role == 'moderator' && resource.data.status == 'pending' &&
+         // përdoruesi nuk duhet të ketë miratuar më parë
+         !(request.auth.uid in resource.data.approvedBy) &&
+         // në të ardhmen approvedCount do të rritet me 1
+         request.resource.data.approvedCount == resource.data.approvedCount + 1 &&
+         // shtohet uid i moderatorit në listën approvedBy
+         request.resource.data.approvedBy.size() == resource.data.approvedBy.size() + 1) ||
+        // Adminët mund të miratojnë dhe të modifikojnë çdo fushë
+        (request.auth.token.role == 'admin')
+      );
+
+      // Fshirja: vetëm admin ose autori mund ta fshijë njoftimin
+      allow delete: if request.auth != null && (
+        request.auth.token.role == 'admin' || resource.data.postedBy == request.auth.uid
+      );
+    }
+  }
+}

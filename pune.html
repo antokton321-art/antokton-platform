@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punë në Europë – Antokton</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+</head>
+<body data-page="pune">
+  <header>
+    <nav>
+      <div>
+        <a href="index.html#home">Kreu</a>
+        <a href="index.html#about">Rreth Nesh</a>
+        <a href="index.html#projects">Projektet</a>
+        <a href="index.html#contact">Kontakt</a>
+      </div>
+      <div>
+        <a href="admin.html" id="admin-panel-link" class="btn" style="display:none; margin-right:10px;">Paneli</a>
+        <button id="login-btn">Kyçu</button>
+        <button id="logout-btn" style="display:none;">Dil</button>
+      </div>
+    </nav>
+  </header>
+  <main class="jobs-page">
+    <h1>Punë në Europë</h1>
+    <div class="jobs-container">
+      <aside class="filters">
+        <h3>Shtetet</h3>
+        <ul id="state-list">
+          <li>
+            <a href="#" data-country="Antokton" class="state-link">Antokton</a>
+            <ul class="sub-regions" id="regions-Antokton">
+              <li><a href="#" data-country="Antokton" data-region="Shkoder" class="region-link">Shkodër &amp; Malësi Veriperëndimore</a></li>
+              <li><a href="#" data-country="Antokton" data-region="Prishtine" class="region-link">Prishtinë &amp; Luginë e Fusha Verilindore</a></li>
+              <li><a href="#" data-country="Antokton" data-region="Shkup" class="region-link">Shkup &amp; Qendër Lindore</a></li>
+              <li><a href="#" data-country="Antokton" data-region="Cameri" class="region-link">Çamëri &amp; Bregdet Jugor e Lindor</a></li>
+              <li><a href="#" data-country="Antokton" data-region="Tirane" class="region-link">Tiranë &amp; Qendër Perëndimore</a></li>
+            </ul>
+          </li>
+          <li><a href="#" data-country="Angli" class="state-link">Angli</a></li>
+          <li><a href="#" data-country="Austri" class="state-link">Austri</a></li>
+          <li><a href="#" data-country="Belgjike" class="state-link">Belgjike</a></li>
+          <li><a href="#" data-country="Bullgari" class="state-link">Bullgari</a></li>
+          <li><a href="#" data-country="Danimarke" class="state-link">Danimarkë</a></li>
+          <li><a href="#" data-country="France" class="state-link">Francë</a></li>
+          <li><a href="#" data-country="Greqi" class="state-link">Greqi</a></li>
+          <li><a href="#" data-country="Gjermani" class="state-link">Gjermani</a></li>
+          <li><a href="#" data-country="Hollande" class="state-link">Hollandë</a></li>
+          <li><a href="#" data-country="Irlande" class="state-link">Irlandë</a></li>
+          <li><a href="#" data-country="Itali" class="state-link">Itali</a></li>
+          <li><a href="#" data-country="Kroaci" class="state-link">Kroaci</a></li>
+          <li><a href="#" data-country="Luksemburg" class="state-link">Luksemburg</a></li>
+          <li><a href="#" data-country="Malte" class="state-link">Maltë</a></li>
+          <li><a href="#" data-country="Portugali" class="state-link">Portugali</a></li>
+          <li><a href="#" data-country="Qipro" class="state-link">Qipro</a></li>
+          <li><a href="#" data-country="Rumani" class="state-link">Rumani</a></li>
+          <li><a href="#" data-country="Slloveni" class="state-link">Slloveni</a></li>
+          <li><a href="#" data-country="Span" class="state-link">Spanjë</a></li>
+          <li><a href="#" data-country="Turqi" class="state-link">Turqi</a></li>
+          <li><a href="#" data-country="Zvicer" class="state-link">Zvicër</a></li>
+        </ul>
+        <h3>Kategori</h3>
+        <ul id="category-list">
+          <li><a href="#" data-category="Ndërtim" class="category-link">Ndërtim &amp; Punë Fizike</a></li>
+          <li><a href="#" data-category="Transport" class="category-link">Transport &amp; Logjistikë</a></li>
+          <li><a href="#" data-category="Hoteleri" class="category-link">Hotelieri &amp; Turizëm</a></li>
+          <li><a href="#" data-category="Shëndet" class="category-link">Kujdes shëndetësor &amp; Infermierë</a></li>
+          <li><a href="#" data-category="Zyre" class="category-link">Punë zyre &amp; Administratë</a></li>
+          <li><a href="#" data-category="IT" class="category-link">Teknologji &amp; IT</a></li>
+          <li><a href="#" data-category="Edukim" class="category-link">Edukimi &amp; Trajnim</a></li>
+          <li><a href="#" data-category="Bujqësi" class="category-link">Bujqësi &amp; Ushqim</a></li>
+          <li><a href="#" data-category="Artizanale" class="category-link">Punime artizanale &amp; Mirëmbajtje</a></li>
+          <li><a href="#" data-category="Tregti" class="category-link">Tregti &amp; Marketing</a></li>
+          <li><a href="#" data-category="Sezonale" class="category-link">Punë të përkohshme &amp; Sezonale</a></li>
+          <li><a href="#" data-category="Gra" class="category-link">Punë për gratë &amp; nga shtëpia</a></li>
+        </ul>
+        <h3>Profesione</h3>
+        <ul id="profession-list">
+          <!-- do të mbushet dinamikisht nga JavaScript -->
+        </ul>
+        <button id="post-job-btn" class="btn" style="margin-top:10px;">Shto njoftim</button>
+        <!-- Vetëm për moderatorët/administratorët -->
+        <button id="moderate-btn" class="btn" style="margin-top:10px; display:none;">Moderim</button>
+      </aside>
+      <section class="job-listings">
+        <div id="jobs-output">
+          <!-- Lista e njoftimeve do të gjenerohet nga JavaScript -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal për postimin e një njoftimi të ri -->
+  <div id="job-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="job-modal-close">&times;</span>
+      <h2>Shto njoftim pune</h2>
+      <form id="job-form">
+        <label for="job-country">Shteti:</label>
+        <select id="job-country" name="country" required>
+          <option value="Antokton">Antokton</option>
+          <option value="Angli">Angli</option>
+          <option value="Austri">Austri</option>
+          <option value="Belgjike">Belgjike</option>
+          <option value="Bullgari">Bullgari</option>
+          <option value="Danimarke">Danimarkë</option>
+          <option value="France">Francë</option>
+          <option value="Greqi">Greqi</option>
+          <option value="Gjermani">Gjermani</option>
+          <option value="Hollande">Hollandë</option>
+          <option value="Irlande">Irlandë</option>
+          <option value="Itali">Itali</option>
+          <option value="Kroaci">Kroaci</option>
+          <option value="Luksemburg">Luksemburg</option>
+          <option value="Malte">Maltë</option>
+          <option value="Portugali">Portugali</option>
+          <option value="Qipro">Qipro</option>
+          <option value="Rumani">Rumani</option>
+          <option value="Slloveni">Slloveni</option>
+          <option value="Span">Spanjë</option>
+          <option value="Turqi">Turqi</option>
+          <option value="Zvicer">Zvicër</option>
+        </select>
+
+        <label for="job-region">Zona:</label>
+        <select id="job-region" name="region">
+          <!-- mbushet dinamikisht -->
+        </select>
+
+        <label for="job-category">Kategoria:</label>
+        <select id="job-category" name="category" required>
+          <option value="Ndërtim">Ndërtim &amp; Punë Fizike</option>
+          <option value="Transport">Transport &amp; Logjistikë</option>
+          <option value="Hoteleri">Hotelieri &amp; Turizëm</option>
+          <option value="Shëndet">Kujdes shëndetësor &amp; Infermierë</option>
+          <option value="Zyre">Punë zyre &amp; Administratë</option>
+          <option value="IT">Teknologji &amp; IT</option>
+          <option value="Edukim">Edukimi &amp; Trajnim</option>
+          <option value="Bujqësi">Bujqësi &amp; Ushqim</option>
+          <option value="Artizanale">Punime artizanale &amp; Mirëmbajtje</option>
+          <option value="Tregti">Tregti &amp; Marketing</option>
+          <option value="Sezonale">Punë të përkohshme &amp; Sezonale</option>
+          <option value="Gra">Punë për gratë &amp; nga shtëpia</option>
+        </select>
+
+        <label for="job-profession">Profesioni:</label>
+        <select id="job-profession" name="profession" required>
+          <!-- mbushet dinamikisht sipas kategorisë -->
+        </select>
+
+        <label for="job-title">Titulli i njoftimit:</label>
+        <input type="text" id="job-title" name="title" required>
+
+        <label for="job-description">Përshkrim:</label>
+        <textarea id="job-description" name="description" rows="4" required></textarea>
+
+        <button type="submit">Dërgo për miratim</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal për moderim -->
+  <div id="moderation-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" id="moderation-modal-close">&times;</span>
+      <h2>Njoftimet në pritje</h2>
+      <div id="moderation-list">
+        <!-- lista e njoftimeve në pritje do të shfaqet këtu -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>“Allahu e do veprën e mirë të kryer me përsosmëri.”</p>
+    <p>&copy; 2025 Antokton – Të gjitha të drejtat të rezervuara.</p>
+  </footer>
+  <script src="js/script.js"></script>
+</body>
+</html>

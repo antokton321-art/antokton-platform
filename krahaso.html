@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Antokton Hub — Krahasues i Moduleve (Demo)</title>
+  <meta name="description" content="Antokton — faqe moderne (single-file) për krahasim interaktiv të moduleve/veg­lave." />
+
+  <style>
+    /* ==========================================================
+       Antokton — Interactive Compare (Single-File / No assets)
+       Calm, premium, minimalist. Dark/Light. Mobile-first.
+       ========================================================== */
+
+    :root{
+      --bg0:#0b1020;
+      --bg1:#0a122a;
+      --panel:rgba(255,255,255,.07);
+      --panel2:rgba(255,255,255,.10);
+      --text:#e9eefc;
+      --muted:rgba(233,238,252,.72);
+      --line:rgba(255,255,255,.14);
+      --shadow: 0 16px 60px rgba(0,0,0,.42);
+      --shadow2: 0 10px 22px rgba(0,0,0,.30);
+      --accent:#8ab4ff;
+      --accent2:#9bffd6;
+      --danger:#ff7f7f;
+      --ok:#9bffd6;
+
+      --radius:18px;
+      --radius2:12px;
+
+      --maxW:1150px;
+      --blur: 12px;
+      --t: 170ms ease;
+
+      --pad: 16px;
+      --gap: 12px;
+    }
+
+    [data-theme="light"]{
+      --bg0:#f5f7ff;
+      --bg1:#eef3ff;
+      --panel:rgba(10,18,42,.06);
+      --panel2:rgba(10,18,42,.09);
+      --text:#0b1020;
+      --muted:rgba(11,16,32,.72);
+      --line:rgba(10,18,42,.14);
+      --shadow: 0 18px 50px rgba(10,18,42,.14);
+      --shadow2: 0 10px 20px rgba(10,18,42,.12);
+      --accent:#2f66ff;
+      --accent2:#0f9d7a;
+      --ok:#0f9d7a;
+      --danger:#c62828;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 12% 10%, rgba(138,180,255,.20), transparent 60%),
+        radial-gradient(820px 520px at 82% 22%, rgba(155,255,214,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+
+    a{color:inherit; text-decoration:none}
+    button, input, select{
+      font:inherit;
+      color:inherit;
+    }
+    button{cursor:pointer}
+
+    .container{
+      width: min(var(--maxW), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .glass{
+      background: var(--panel);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+    }
+
+    .section{padding: 24px 0 44px}
+    .h1{
+      margin:0;
+      font-size: 22px;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.55;
+      max-width: 80ch;
+      font-size: 13px;
+    }
+
+    /* ===== Header ===== */
+    .header{
+      position: sticky;
+      top:0;
+      z-index: 50;
+      padding: 12px 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0));
+    }
+    [data-theme="light"] .header{
+      background: linear-gradient(180deg, rgba(245,247,255,.92), rgba(245,247,255,0));
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 220px;
+    }
+    .mark{
+      width:34px;height:34px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(18px 18px at 30% 30%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 60%),
+        radial-gradient(18px 18px at 70% 70%, color-mix(in srgb, var(--accent2) 24%, transparent), transparent 60%),
+        color-mix(in srgb, var(--panel2) 75%, transparent);
+    }
+    .word{
+      font-weight: 700;
+      letter-spacing:-.01em;
+      line-height:1.1;
+    }
+    .word small{
+      display:block;
+      font-weight: 500;
+      color:var(--muted);
+      font-size: 12px;
+      margin-top:2px;
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow2);
+      transition: transform var(--t), background var(--t), border-color var(--t);
+      white-space:nowrap;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); background: var(--panel2)}
+    .btn:active{transform: translateY(0)}
+    .btn:focus{outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent); outline-offset:2px}
+
+    .btn.primary{
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--accent) 18%, var(--panel2)),
+        color-mix(in srgb, var(--accent2) 12%, var(--panel))
+      );
+    }
+
+    .icon{
+      width:28px; height:28px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 10px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 75%, transparent);
+      flex: 0 0 auto;
+    }
+    .icon svg{width:16px; height:16px; opacity:.92}
+
+    /* ===== Controls bar ===== */
+    .controls{
+      margin-top: 12px;
+      padding: 12px;
+    }
+    .ctrlGrid{
+      display:grid;
+      grid-template-columns: 1.2fr 180px 180px 200px;
+      gap: 10px;
+      align-items:center;
+    }
+    .field{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+      outline:none;
+      transition: border-color var(--t), background var(--t);
+    }
+    .field:focus{
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      background: color-mix(in srgb, var(--panel2) 85%, transparent);
+    }
+    .label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 6px 2px;
+    }
+    .stack{display:grid; gap:6px}
+
+    /* ===== Cards ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap);
+      margin-top: 12px;
+    }
+    .card{
+      padding: 14px;
+      border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow2);
+      transition: transform var(--t), border-color var(--t), background var(--t);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+    }
+
+    .cardTop{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .name{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:-.01em;
+    }
+    .desc{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+      min-height: 38px;
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+      color:var(--muted);
+      font-size: 12px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+      white-space:nowrap;
+    }
+
+    .cardFoot{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-size: 13px;
+      color: var(--muted);
+      user-select:none;
+    }
+    .toggle input{accent-color: var(--accent)}
+    .miniBtn{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: transparent;
+      transition: background var(--t), border-color var(--t);
+    }
+    .miniBtn:hover{
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--line));
+    }
+
+    /* ===== Compare table ===== */
+    .compare{
+      margin-top: 16px;
+      padding: 12px;
+    }
+    .compareHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .compareHead h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:-.01em;
+    }
+    .compareHead p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+      max-width: 70ch;
+    }
+
+    .tableWrap{
+      overflow:auto;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 65%, transparent);
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+    th, td{
+      padding: 12px 12px;
+      text-align:left;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+    th{
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--panel2) 80%, transparent);
+      backdrop-filter: blur(var(--blur));
+      -webkit-backdrop-filter: blur(var(--blur));
+    }
+    tr:hover td{
+      background: color-mix(in srgb, var(--panel2) 60%, transparent);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      white-space:nowrap;
+    }
+
+    /* ===== Modal ===== */
+    .backdrop{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      background: rgba(0,0,0,.55);
+      z-index: 100;
+    }
+    [data-theme="light"] .backdrop{background: rgba(10,18,42,.35)}
+
+    .modal{
+      width: min(820px, 100%);
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+    }
+    .modalHead h3{
+      margin:0;
+      font-size: 15px;
+      letter-spacing:-.01em;
+    }
+    .closeBtn{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      transition: background var(--t), border-color var(--t);
+    }
+    .closeBtn:hover{
+      background: color-mix(in srgb, var(--panel2) 70%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 25%, var(--line));
+      color: var(--text);
+    }
+    .modalBody{
+      padding: 14px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+    }
+    .modalBody p{
+      margin:0;
+      color: var(--muted);
+      line-height:1.65;
+      font-size: 13px;
+    }
+    .list{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.55;
+    }
+    .list li{margin: 6px 0}
+    .kv{
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: color-mix(in srgb, var(--panel2) 65%, transparent);
+      padding: 12px;
+    }
+    .kvRow{
+      display:grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+    }
+    .kvRow:last-child{border-bottom:none}
+    .k{color: var(--muted)}
+    .v{color: var(--text)}
+    .link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: var(--panel);
+      margin-top: 10px;
+    }
+    .link:hover{background: var(--panel2)}
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height:1.5;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 980px){
+      .ctrlGrid{grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns: repeat(2, 1fr)}
+      .modalBody{grid-template-columns: 1fr}
+    }
+    @media (max-width: 640px){
+      .grid{grid-template-columns: 1fr}
+      .actions{justify-content:flex-start}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important}
+      html{scroll-behavior:auto}
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="glass topbar">
+        <div class="brand">
+          <div class="mark" aria-hidden="true"></div>
+          <div class="word">
+            <span id="t_brand">Antokton</span>
+            <small id="t_sub">Hub — Krahasues Interaktiv (Demo)</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="themeBtn" aria-pressed="false" title="Dark/Light">
+            <span class="icon" aria-hidden="true" id="themeIcon"></span>
+            <span id="t_theme">Dark</span>
+          </button>
+          <button class="btn" id="resetBtn" title="Reset filters">
+            <span class="icon" aria-hidden="true" id="resetIcon"></span>
+            <span id="t_reset">Rivendos</span>
+          </button>
+          <a class="btn primary" href="#compare" id="t_gotoCompare">
+            <span class="icon" aria-hidden="true" id="compareIcon"></span>
+            <span id="t_compareBtn">Krahaso</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="glass controls">
+        <div class="ctrlGrid">
+          <div class="stack">
+            <span class="label" id="t_searchLabel">Kërko</span>
+            <input class="field" id="search" type="search" placeholder="p.sh. punë, edukim, juridike..." />
+          </div>
+
+          <div class="stack">
+            <span class="label" id="t_categoryLabel">Kategoria</span>
+            <select class="field" id="category">
+              <option value="all" id="t_cat_all">Të gjitha</option>
+              <option value="pune" id="t_cat_pune">Punë</option>
+              <option value="media" id="t_cat_media">Media</option>
+              <option value="edukim" id="t_cat_edukim">Edukim</option>
+              <option value="juridike" id="t_cat_juridike">Juridike</option>
+              <option value="bamiresi" id="t_cat_bamiresi">Bamirësi</option>
+              <option value="udhetim" id="t_cat_udhetim">Udhëtim</option>
+              <option value="strehim" id="t_cat_strehim">Strehim</option>
+            </select>
+          </div>
+
+          <div class="stack">
+            <span class="label" id="t_priceLabel">Çmimi</span>
+            <select class="field" id="price">
+              <option value="all" id="t_price_all">Të gjitha</option>
+              <option value="free" id="t_price_free">Falas</option>
+              <option value="freemium" id="t_price_freemium">Freemium</option>
+              <option value="paid" id="t_price_paid">Me pagesë</option>
+            </select>
+          </div>
+
+          <div class="stack">
+            <span class="label" id="t_ratingLabel">Minimum vlerësimi</span>
+            <select class="field" id="rating">
+              <option value="0">0+</option>
+              <option value="3">3.0+</option>
+              <option value="4">4.0+</option>
+              <option value="4.5">4.5+</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="sub" id="t_intro">
+          Zgjidh disa module të Antokton për krahasim. Kliko kartën për detaje të plota, pro/kontra dhe link (placeholder).
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cards -->
+  <main class="section">
+    <div class="container">
+      <div class="grid" id="cards"></div>
+
+      <!-- Compare -->
+      <section id="compare" class="glass compare">
+        <div class="compareHead">
+          <div>
+            <h2 id="t_compareTitle">Krahasimi (Side-by-side)</h2>
+            <p id="t_compareSub">Zgjidh deri në 4 për krahasim. Tabela poshtë përditësohet automatikisht.</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn" id="clearCompare">
+              <span class="icon" aria-hidden="true" id="clearIcon"></span>
+              <span id="t_clear">Pastro krahasimin</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="tableWrap">
+          <table aria-label="Comparison table">
+            <thead>
+              <tr>
+                <th id="t_col_name">Emri</th>
+                <th id="t_col_cat">Kategoria</th>
+                <th id="t_col_price">Çmimi</th>
+                <th id="t_col_rating">Vlerësimi</th>
+                <th id="t_col_focus">Fokus</th>
+                <th id="t_col_best">Më e mira për</th>
+              </tr>
+            </thead>
+            <tbody id="compareBody">
+              <tr>
+                <td colspan="6" style="color:var(--muted)" id="t_emptyCompare">
+                  Zgjidh karta për t’i krahasuar këtu.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hint" id="t_hint">
+          Demo UI — pa backend. Link-et janë placeholders; në prodhim lidhen me faqet reale të moduleve.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="backdrop" id="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Details modal">
+      <div class="modalHead">
+        <h3 id="modalTitle">Detaje</h3>
+        <button class="closeBtn" id="closeBtn"><span id="t_close">Mbyll</span></button>
+      </div>
+      <div class="modalBody" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       Antokton — Interactive Compare (no external assets)
+       Features:
+       - Cards grid, click for modal details (pros/cons/link)
+       - Multi-select compare (up to 4) + table
+       - Filters: search, category, price, rating
+       - Reset filters button
+       - Dark/Light toggle persisted in localStorage
+       ========================================================== */
+
+    // ---- Minimal inline SVG icons (no external images) ----
+    const svg = {
+      moon: `<svg viewBox="0 0 24 24" fill="none"><path d="M12 3a7.5 7.5 0 1 0 0 15V3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 3a7.5 7.5 0 0 1 0 15" stroke="currentColor" stroke-width="2" stroke-linejoin="round" opacity=".6"/></svg>`,
+      reset:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 1 1-2.3-5.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+      compare:`<svg viewBox="0 0 24 24" fill="none"><path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="2"/><path d="M4 12h3M17 12h3M12 4v3M12 17v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".75"/></svg>`,
+      clear:`<svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5h6v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 7l1 14h6l1-14" stroke="currentColor" stroke-width="2" stroke-linejoin="round" opacity=".8"/></svg>`,
+      link:`<svg viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".8"/></svg>`,
+      star:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.6 6.2 6.7.6-5.1 4.4 1.5 6.6L12 17.8 6.3 20.8l1.5-6.6L2.7 9.8l6.7-.6L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`
+    };
+
+    const ICONS = {
+      pune:`<svg viewBox="0 0 24 24" fill="none"><path d="M9 7V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4 13h16" stroke="currentColor" stroke-width="2" opacity=".7"/></svg>`,
+      media:`<svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 9l6 3-6 3V9z" fill="currentColor" opacity=".8"/></svg>`,
+      edukim:`<svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4-8 4-8-4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6 10v6c0 2 3 4 6 4s6-2 6-4v-6" stroke="currentColor" stroke-width="2" stroke-linejoin="round" opacity=".8"/></svg>`,
+      juridike:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9.5 12l1.8 1.8 3.7-3.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/></svg>`,
+      bamiresi:`<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-7-10.6A4.6 4.6 0 0 1 9.6 6c1.1 0 2.2.4 3 1.2.8-.8 1.9-1.2 3-1.2A4.6 4.6 0 0 1 19 10.4C19 16.6 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+      udhetim:`<svg viewBox="0 0 24 24" fill="none"><path d="M21 16l-8-3V3l2-1 2 9 4 2v3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 20h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".75"/><path d="M7 20l2-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".75"/></svg>`,
+      strehim:`<svg viewBox="0 0 24 24" fill="none"><path d="M5 19V10l7-6 7 6v9" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 19v-6h6v6" stroke="currentColor" stroke-width="2" stroke-linejoin="round" opacity=".8"/></svg>`
+    };
+
+    // ---- Data (as "tools" but adapted to Antokton modules) ----
+    const ITEMS = [
+      {
+        id:"pune-europe",
+        name:"Punë në Europë",
+        category:"pune",
+        priceType:"free",
+        priceText:"Falas (demo)",
+        rating:4.7,
+        short:"Njoftime pune dhe njoftime komunitare me filtra sipas shtetit/qytetit/profesionit.",
+        focus:"Punë & njoftime",
+        bestFor:"Punëkërkues dhe punëdhënës",
+        details:"Modul për postime pune, komente, vlerësime dhe organizim sipas shteteve, qyteteve dhe profesioneve.",
+        pros:["Organizim i fortë sipas vendit/kategorisë","Komente + vlerësime reciproke","Moderim i përmbajtjes (Hallall)"],
+        cons:["Integrimet e avancuara kërkojnë backend","Kërkon politikë të qartë moderimi"],
+        linkLabel:"pune.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"tv-radio",
+        name:"Antokton TV & Radio",
+        category:"media",
+        priceType:"freemium",
+        priceText:"Freemium (demo)",
+        rating:4.5,
+        short:"Transmetime live, arkivë videosh dhe audio streaming me përmbajtje informative/edukative.",
+        focus:"Media & komunitet",
+        bestFor:"Komuniteti (informim/edukim)",
+        details:"Platformë media me live, arkivë dhe radio streaming. Përmbajtje e moderuar dhe e dobishme.",
+        pros:["Live + arkivë + radio në një vend","Përmbajtje e orientuar në dobishmëri","UI e qetë dhe e lexueshme"],
+        cons:["Kërkon infrastrukturë streaming","Menaxhim i të drejtave/metadata"],
+        linkLabel:"tv.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"shtepi",
+        name:"Shtëpi me qira",
+        category:"strehim",
+        priceType:"free",
+        priceText:"Falas (demo)",
+        rating:4.2,
+        short:"Kërko/Ofron shtëpi me qira, të organizuara sipas shteteve dhe qyteteve.",
+        focus:"Strehim",
+        bestFor:"Strehim i shpejtë",
+        details:"Postime për strehim (kërko/ofro), me komente dhe raportim abuzimesh (në prodhim).",
+        pros:["Kërko/ofro i thjeshtë","Organizim sipas vendndodhjes","Mundësi për verifikim (opsional)"],
+        cons:["Kërkon mekanizma anti-spam","Verifikimi kërkon procese shtesë"],
+        linkLabel:"housing.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"juridike",
+        name:"Ndihmë juridike",
+        category:"juridike",
+        priceType:"freemium",
+        priceText:"Freemium (demo)",
+        rating:4.1,
+        short:"Orientim bazë dhe njoftime për ndihmë juridike, me kategori dhe moderim të kujdesshëm.",
+        focus:"Juridike",
+        bestFor:"Orientim & template",
+        details:"Modul informues me kategori, template dokumentesh dhe strukturë për kërkesa (në prodhim).",
+        pros:["Kategorizim i qartë","Template & checklist","Moderim i përmbajtjes së ndjeshme"],
+        cons:["Kërkon kujdes ligjor (disclaimer)","Nuk zëvendëson këshillën profesionale"],
+        linkLabel:"legal.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"edukim-hallall",
+        name:"Edukim Hallall",
+        category:"edukim",
+        priceType:"free",
+        priceText:"Falas (demo)",
+        rating:4.8,
+        short:"Kurse dhe materiale edukative (audio-first), trajnime profesionale dhe strukturë progresi.",
+        focus:"Edukim",
+        bestFor:"Fëmijë & të rritur",
+        details:"Seksion edukimi me mësime, audio, materiale dhe trajnime. Fokus në dobishmëri dhe etikë.",
+        pros:["Audio-first (praktik për çdo kohë)","Strukturë kursesh","Etikë & gjuhë e pastër"],
+        cons:["Kërkon kurim/kurikulë të vazhdueshme","Kërkon menaxhim të progresit (backend)"],
+        linkLabel:"edu.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"fitra",
+        name:"Bamirësi (Fitra Antokton)",
+        category:"bamiresi",
+        priceType:"free",
+        priceText:"Falas (demo)",
+        rating:4.4,
+        short:"Fushata bamirësie, transparencë, raportim dhe lidhje me fondacionin (në prodhim).",
+        focus:"Bamirësi",
+        bestFor:"Transparencë & raportim",
+        details:"Modul për fushata bamirësie me raportim, prova shpenzimesh dhe strukturë të qartë komunikimi.",
+        pros:["Fokus te transparenca","Raportim i standardizuar","Besueshmëri komunitare"],
+        cons:["Kërkon verifikim dokumentesh","Proces i qartë auditimi"],
+        linkLabel:"charity.antokton.com (placeholder)",
+        linkHref:"#"
+      },
+      {
+        id:"bileta",
+        name:"Bileta udhëtimi",
+        category:"udhetim",
+        priceType:"paid",
+        priceText:"Me pagesë (demo)",
+        rating:4.0,
+        short:"Kërkim biletash (avion/tren/autobus/furgon) dhe rezervim përmes partnerëve (në prodhim).",
+        focus:"Udhëtim",
+        bestFor:"Bileta & itinerar",
+        details:"Modul kërkimi biletash me destinacion/datë dhe integrime me partnerë. Në prodhim mundëson rezervim/blerje.",
+        pros:["Kërkim i centralizuar","Opsione low-cost","Mundësi monetizimi (markup)"],
+        cons:["Varet nga partnerët/API","Kërkon menaxhim të pagesave"],
+        linkLabel:"travel.antokton.com (placeholder)",
+        linkHref:"#"
+      }
+    ];
+
+    // ---- State ----
+    const state = {
+      theme: localStorage.getItem("antokton_compare_theme") || "dark",
+      search: "",
+      category: "all",
+      price: "all",
+      rating: 0,
+      compare: new Set()
+    };
+
+    // ---- DOM helpers ----
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    }[c]));
+
+    // ---- Init icons ----
+    $("themeIcon").innerHTML = svg.moon;
+    $("resetIcon").innerHTML = svg.reset;
+    $("compareIcon").innerHTML = svg.compare;
+    $("clearIcon").innerHTML = svg.clear;
+
+    // ---- Theme ----
+    function applyTheme(){
+      document.documentElement.setAttribute("data-theme", state.theme === "light" ? "light" : "dark");
+      localStorage.setItem("antokton_compare_theme", state.theme);
+      $("themeBtn").setAttribute("aria-pressed", String(state.theme === "light"));
+      $("t_theme").textContent = (state.theme === "light") ? "Light" : "Dark";
+    }
+    function toggleTheme(){
+      state.theme = (state.theme === "dark") ? "light" : "dark";
+      applyTheme();
+    }
+
+    // ---- Filtering ----
+    function getFiltered(){
+      const q = state.search.trim().toLowerCase();
+      const minR = Number(state.rating || 0);
+
+      return ITEMS.filter(it => {
+        if(state.category !== "all" && it.category !== state.category) return false;
+        if(state.price !== "all" && it.priceType !== state.price) return false;
+        if(it.rating < minR) return false;
+
+        if(q){
+          const hay = (it.name + " " + it.short + " " + it.focus + " " + it.bestFor).toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    // ---- Cards render ----
+    function starText(r){
+      // simple, stable display
+      return r.toFixed(1);
+    }
+
+    function cardHTML(it){
+      const checked = state.compare.has(it.id);
+      const catLabel = $("#category").querySelector(`option[value="${it.category}"]`)?.textContent || it.category;
+
+      return `
+        <article class="card" data-id="${esc(it.id)}">
+          <div class="cardTop">
+            <span class="icon" aria-hidden="true">${ICONS[it.category] || svg.star}</span>
+            <div style="min-width:0">
+              <h3 class="name">${esc(it.name)}</h3>
+              <p class="desc">${esc(it.short)}</p>
+            </div>
+          </div>
+
+          <div class="meta">
+            <span class="chip"><span class="icon" aria-hidden="true" style="width:22px;height:22px;border-radius:9px">${svg.compare}</span>${esc(catLabel)}</span>
+            <span class="chip">${esc(it.priceText)}</span>
+            <span class="chip"><span class="icon" aria-hidden="true" style="width:22px;height:22px;border-radius:9px">${svg.star}</span>${esc(starText(it.rating))}</span>
+          </div>
+
+          <div class="cardFoot">
+            <label class="toggle" title="Shto në krahasim">
+              <input type="checkbox" ${checked ? "checked" : ""} data-compare="${esc(it.id)}" />
+              <span>Krahaso</span>
+            </label>
+            <button class="miniBtn" data-open="${esc(it.id)}">Detaje</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderCards(){
+      const list = getFiltered();
+      const host = $("cards");
+      host.innerHTML = list.map(cardHTML).join("");
+
+      // Bind events
+      host.querySelectorAll("[data-open]").forEach(btn=>{
+        btn.addEventListener("click", () => openDetails(btn.getAttribute("data-open")));
+      });
+
+      host.querySelectorAll("[data-compare]").forEach(cb=>{
+        cb.addEventListener("change", () => {
+          const id = cb.getAttribute("data-compare");
+          toggleCompare(id, cb.checked);
+        });
+      });
+
+      // Allow clicking card body to open details (but not when clicking checkbox/button)
+      host.querySelectorAll(".card").forEach(card=>{
+        card.addEventListener("click", (e)=>{
+          const t = e.target;
+          if(t.closest("button") || t.closest("label") || t.tagName === "INPUT") return;
+          openDetails(card.getAttribute("data-id"));
+        });
+      });
+    }
+
+    // ---- Compare logic ----
+    function toggleCompare(id, on){
+      if(on){
+        // Limit to 4 for usability
+        if(state.compare.size >= 4){
+          // revert checkbox
+          const cb = document.querySelector(`[data-compare="${CSS.escape(id)}"]`);
+          if(cb) cb.checked = false;
+          // gentle modal note
+          openModal("Krahasim", `
+            <p>Në demo, mund të krahasosh deri në 4 module njëkohësisht.</p>
+            <div class="kv">
+              <div class="kvRow"><div class="k">Kufiri</div><div class="v">4</div></div>
+              <div class="kvRow"><div class="k">Zgjidhja</div><div class="v">Hiq një dhe shto tjetrin.</div></div>
+            </div>
+          `);
+          return;
+        }
+        state.compare.add(id);
+      } else {
+        state.compare.delete(id);
+      }
+      renderCompare();
+    }
+
+    function renderCompare(){
+      const body = $("compareBody");
+      const ids = Array.from(state.compare);
+      if(ids.length === 0){
+        body.innerHTML = `<tr><td colspan="6" style="color:var(--muted)" id="t_emptyCompare">Zgjidh karta për t’i krahasuar këtu.</td></tr>`;
+        return;
+      }
+
+      const rows = ids
+        .map(id => ITEMS.find(x => x.id === id))
+        .filter(Boolean)
+        .map(it => {
+          const catLabel = $("#category").querySelector(`option[value="${it.category}"]`)?.textContent || it.category;
+          return `
+            <tr>
+              <td><span class="pill">${esc(it.name)}</span></td>
+              <td>${esc(catLabel)}</td>
+              <td>${esc(it.priceText)}</td>
+              <td>${esc(it.rating.toFixed(1))}</td>
+              <td>${esc(it.focus)}</td>
+              <td>${esc(it.bestFor)}</td>
+            </tr>
+          `;
+        }).join("");
+
+      body.innerHTML = rows;
+    }
+
+    // ---- Details modal ----
+    let lastFocus = null;
+
+    function openModal(title, html){
+      lastFocus = document.activeElement;
+      $("modalTitle").textContent = title;
+      $("modalBody").innerHTML = html;
+      $("backdrop").style.display = "flex";
+      $("backdrop").setAttribute("aria-hidden","false");
+      $("closeBtn").focus();
+      document.body.style.overflow = "hidden";
+    }
+    function closeModal(){
+      $("backdrop").style.display = "none";
+      $("backdrop").setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      if(lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    function openDetails(id){
+      const it = ITEMS.find(x => x.id === id);
+      if(!it) return;
+
+      const catLabel = $("#category").querySelector(`option[value="${it.category}"]`)?.textContent || it.category;
+      const pros = it.pros.map(x => `<li>${esc(x)}</li>`).join("");
+      const cons = it.cons.map(x => `<li>${esc(x)}</li>`).join("");
+
+      openModal(it.name, `
+        <div>
+          <p>${esc(it.details)}</p>
+
+          <div style="margin-top:12px" class="kv">
+            <div class="kvRow"><div class="k">Kategoria</div><div class="v">${esc(catLabel)}</div></div>
+            <div class="kvRow"><div class="k">Çmimi</div><div class="v">${esc(it.priceText)}</div></div>
+            <div class="kvRow"><div class="k">Vlerësimi</div><div class="v">${esc(it.rating.toFixed(1))} / 5.0</div></div>
+            <div class="kvRow"><div class="k">Fokus</div><div class="v">${esc(it.focus)}</div></div>
+            <div class="kvRow"><div class="k">Më e mira për</div><div class="v">${esc(it.bestFor)}</div></div>
+          </div>
+
+          <a class="link" href="${esc(it.linkHref)}" target="_blank" rel="noopener">
+            <span class="icon" aria-hidden="true">${svg.link}</span>
+            <span>${esc(it.linkLabel)}</span>
+          </a>
+
+          <div class="hint">Shënim: Link placeholder. Në prodhim lidhet me URL reale.</div>
+        </div>
+
+        <div>
+          <div class="kv">
+            <div class="kvRow">
+              <div class="k" style="color:var(--ok)">Pro</div>
+              <div class="v"></div>
+            </div>
+            <ul class="list">${pros}</ul>
+          </div>
+
+          <div class="kv" style="margin-top:12px">
+            <div class="kvRow">
+              <div class="k" style="color:var(--danger)">Kundër</div>
+              <div class="v"></div>
+            </div>
+            <ul class="list">${cons}</ul>
+          </div>
+
+          <div style="margin-top:12px">
+            <button class="btn primary" id="modalCompareBtn">
+              <span class="icon" aria-hidden="true">${svg.compare}</span>
+              <span>Shto/Hiq në krahasim</span>
+            </button>
+          </div>
+        </div>
+      `);
+
+      // Bind modal compare toggle
+      const btn = $("modalCompareBtn");
+      if(btn){
+        btn.addEventListener("click", () => {
+          const on = !state.compare.has(it.id);
+          toggleCompare(it.id, on);
+
+          // Sync checkbox if visible
+          const cb = document.querySelector(`[data-compare="${CSS.escape(it.id)}"]`);
+          if(cb) cb.checked = on;
+
+          // keep user oriented
+          const el = document.getElementById("compare");
+          if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+        });
+      }
+    }
+
+    // ---- Reset ----
+    function resetAll(){
+      state.search = "";
+      state.category = "all";
+      state.price = "all";
+      state.rating = 0;
+
+      $("search").value = "";
+      $("category").value = "all";
+      $("price").value = "all";
+      $("rating").value = "0";
+
+      renderCards();
+    }
+
+    // ---- Events ----
+    $("themeBtn").addEventListener("click", toggleTheme);
+    $("resetBtn").addEventListener("click", resetAll);
+
+    $("search").addEventListener("input", (e) => {
+      state.search = e.target.value || "";
+      renderCards();
+    });
+    $("category").addEventListener("change", (e) => {
+      state.category = e.target.value;
+      renderCards();
+    });
+    $("price").addEventListener("change", (e) => {
+      state.price = e.target.value;
+      renderCards();
+    });
+    $("rating").addEventListener("change", (e) => {
+      state.rating = parseFloat(e.target.value || "0");
+      renderCards();
+    });
+
+    $("clearCompare").addEventListener("click", () => {
+      state.compare.clear();
+      // Uncheck any visible checkboxes
+      document.querySelectorAll("[data-compare]").forEach(cb => cb.checked = false);
+      renderCompare();
+    });
+
+    $("closeBtn").addEventListener("click", closeModal);
+    $("backdrop").addEventListener("click", (e)=>{ if(e.target.id === "backdrop") closeModal(); });
+    document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && $("backdrop").getAttribute("aria-hidden")==="false") closeModal(); });
+
+    // ---- Boot ----
+    applyTheme();
+    renderCards();
+    renderCompare();
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antokton – Ekosistemi Komunitar</title>
+  <!--
+    Kjo faqe kryesore merr frymëzim direkt nga dizajni glass-morphism i prototipit
+    AntoktonHub. Ndërtimi është i thjeshtuar për të mbetur lehtë i mirëmbajtshëm:
+    përdor karta të tejdukshme, një sistem ngjyrash të errët/dritë, dhe
+    seksione të ndara qartë.  Navigimi përfshin lidhje drejt faqeve të
+    veçanta të moduleve (Punë në Europë, Edukim, TV & Radio, Fitra) si dhe
+    opsione për krahasim dhe ndryshim teme.  Përveç kësaj, script-i bazë
+    ngarkon konfigurimin e Firebase dhe aktivizon një buton të thjeshtë për
+    identifikim.  Për funksionalitete të plota të postimit/vlerësimit të
+    njoftimeve, përdoret script.js i vendosur në dosjen js/.
+  -->
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+</head>
+<body data-theme="dark">
+  <!-- Navigimi kryesor -->
+  <div class="navwrap">
+    <div class="container">
+      <div class="card nav">
+        <div class="brand">
+          <div class="mark" aria-hidden="true"></div>
+          <div class="wordmark">
+            <span>Antokton</span>
+            <small>Ekosistem</small>
+          </div>
+        </div>
+        <div class="links" aria-label="Sections">
+          <a href="#home">Home</a>
+          <a href="#modules">Modulet</a>
+          <a href="#about">Rreth</a>
+          <a href="#contact">Kontakt</a>
+          <a href="pune.html">Punë</a>
+          <a href="krahaso.html">Krahaso</a>
+        </div>
+        <div class="controls">
+          <button class="btn small" id="themeBtn" aria-pressed="false">Ndrysho temën</button>
+          <button class="btn small" id="loginBtn" aria-pressed="false">Kyçu</button>
+        </div>
+      </div>
+      <div class="card mobilePanel" id="mobilePanel" aria-hidden="true">
+        <a href="#home" data-close="1">Home</a>
+        <a href="#modules" data-close="1">Modulet</a>
+        <a href="#about" data-close="1">Rreth</a>
+        <a href="#contact" data-close="1">Kontakt</a>
+        <a href="pune.html" data-close="1">Punë</a>
+        <a href="krahaso.html" data-close="1">Krahaso</a>
+        <div class="mobileRow">
+          <button class="btn small" id="themeBtn2">Ndrysho temën</button>
+          <button class="btn small" id="loginBtn2">Kyçu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header id="home" class="section">
+    <div class="container">
+      <div class="heroGrid">
+        <section class="card pad">
+          <div class="badge" style="margin-bottom:12px">Ekosistemi Antokton</div>
+          <h1>Antokton</h1>
+          <p>Platformë komunitare për punë, edukim, media dhe shërbime bamirësie.</p>
+          <div class="heroActions">
+            <a class="btn primary" href="pune.html">Punë në Europë</a>
+            <a class="btn primary" href="tv-radio.html">TV & Radio</a>
+            <a class="btn primary" href="edukim.html">Edukim Hallall</a>
+            <a class="btn primary" href="fitra.html">Fitra</a>
+          </div>
+        </section>
+        <aside class="card pad">
+          <div class="stat">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M9.5 12l1.8 1.8 3.7-3.7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Standard etik</strong>
+              <span>Gjuhë e pastër, përmbajtje e respektueshme, orientim komunitar.</span>
+            </div>
+          </div>
+          <div class="stat" style="margin-top:12px">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="2"/>
+                <path d="M4 12h3M17 12h3M12 4v3M12 17v3" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Modularitet</strong>
+              <span>Punë, edukim, media dhe bamirësi në një vend.</span>
+            </div>
+          </div>
+          <div class="stat" style="margin-top:12px">
+            <div class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="2"/>
+                <path d="M10 9l6 3-6 3V9z" fill="currentColor" opacity=".8"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Qartësi & qetësi</strong>
+              <span>UI e thjeshtë, premium dhe e lexueshme në çdo pajisje.</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <!-- MODULES -->
+  <section id="modules" class="section">
+    <div class="container">
+      <h2>Modulet</h2>
+      <p>Zgjidh një modul për të vazhduar.</p>
+      <div class="grid modulesGrid">
+        <article class="card pad module-card">
+          <h3>Punë në Europë</h3>
+          <p>Njoftime pune dhe shërbime komunitare për diasporën.</p>
+          <a href="pune.html" class="btn">Hap</a>
+        </article>
+        <article class="card pad module-card">
+          <h3>Edukim Hallall</h3>
+          <p>Kurset dhe mësimet e Antoktonit.</p>
+          <a href="edukim.html" class="btn">Hap</a>
+        </article>
+        <article class="card pad module-card">
+          <h3>Antokton TV & Radio</h3>
+          <p>Video dhe audio për komunitetin.</p>
+          <a href="tv-radio.html" class="btn">Hap</a>
+        </article>
+        <article class="card pad module-card">
+          <h3>Fitra & Bamirësi</h3>
+          <p>Thirrje për bamirësi dhe transparencë.</p>
+          <a href="fitra.html" class="btn">Hap</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2>Rreth Antokton</h2>
+      <p>Parime të qarta, shërbime praktike dhe standard etik për komunitetin.</p>
+      <div class="grid aboutGrid">
+        <article class="card pad aboutCard">
+          <h3>Misioni</h3>
+          <p>Të ofrojë një hapësirë funksionale ku komuniteti gjen punë, informim, edukim dhe zgjidhje praktike në mënyrë të qartë dhe të besueshme.</p>
+        </article>
+        <article class="card pad aboutCard">
+          <h3>Standardi Hallall</h3>
+          <p>Përmbajtje e respektueshme, gjuhë pa fyerje dhe fokus në dobishmëri. Moderim i kujdesshëm për ruajtjen e etikës.</p>
+        </article>
+        <article class="card pad aboutCard">
+          <h3>Komuniteti</h3>
+          <p>Njerëzit kontribuojnë me njoftime, komente dhe vlerësime duke ndërtuar besim dhe përgjegjësi të ndërsjellë.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container">
+      <h2>Kontakt</h2>
+      <p>Na shkruani për çdo pyetje, sugjerim apo bashkëpunim.</p>
+      <p>Email: <a href="mailto:info@antokton.com">info@antokton.com</a></p>
+    </div>
+  </section>
+
+  <!-- Skriptat -->
+  <script src="js/script.js"></script>
+  <script>
+  // Rregullo temën ndërmjet errësirës dhe dritës
+  function setTheme(isDark) {
+    const root = document.body;
+    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.querySelectorAll('#themeBtn, #themeBtn2').forEach(btn => {
+      btn.textContent = isDark ? 'Dritë' : 'Errësirë';
+    });
+  }
+  // Ngarko tema nga localStorage
+  (function(){
+    const stored = localStorage.getItem('theme');
+    if(stored === 'light') setTheme(false);
+    else setTheme(true);
+  })();
+  // Event listeners
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const isDark = document.body.getAttribute('data-theme') !== 'dark';
+    setTheme(isDark);
+  });
+  document.getElementById('themeBtn2').addEventListener('click', () => {
+    const isDark = document.body.getAttribute('data-theme') !== 'dark';
+    setTheme(isDark);
+  });
+  // Mobile menu toggle
+  const menuBtn = document.querySelector('.menuBtn');
+  const mobilePanel = document.getElementById('mobilePanel');
+  if(menuBtn){
+    menuBtn.addEventListener('click', () => {
+      const expanded = menuBtn.getAttribute('aria-expanded') === 'true';
+      menuBtn.setAttribute('aria-expanded', (!expanded).toString());
+      mobilePanel.setAttribute('aria-hidden', expanded.toString());
+    });
+    mobilePanel.querySelectorAll('a[data-close]').forEach(link => {
+      link.addEventListener('click', () => {
+        menuBtn.setAttribute('aria-expanded', 'false');
+        mobilePanel.setAttribute('aria-hidden', 'true');
+      });
+    });
+  }
+  // Login buttons – delegohen tek script.js për autentikim
+  document.querySelectorAll('#loginBtn, #loginBtn2').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(typeof signInWithFacebook === 'function') {
+        signInWithFacebook();
+      } else {
+        alert('Autentikimi nuk është i disponueshëm.');
+      }
+    });
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrimi – Antokton</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Firebase libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-functions-compat.js"></script>
+</head>
+<body data-page="admin">
+  <header>
+    <nav>
+      <div>
+        <a href="index.html#home">Kreu</a>
+        <a href="index.html#about">Rreth Nesh</a>
+        <a href="index.html#projects">Projektet</a>
+        <a href="index.html#contact">Kontakt</a>
+      </div>
+      <div>
+        <a href="admin.html" id="admin-panel-link" class="btn" style="display:none; margin-right:10px;">Paneli</a>
+        <button id="login-btn">Kyçu</button>
+        <button id="logout-btn" style="display:none;">Dil</button>
+      </div>
+    </nav>
+  </header>
+  <main class="admin-page">
+    <h1>Panel Administrimi</h1>
+    <p>Ky seksion lejon administratorët dhe moderatorët të shohin përdoruesit dhe të ndryshojnë rolet e tyre.</p>
+    <div id="user-list">
+      <!-- Tabela e përdoruesve do të gjenerohet këtu -->
+    </div>
+  </main>
+  <footer>
+    <p>“Allahu e do veprën e mirë të kryer me përsosmëri.”</p>
+    <p>&copy; 2025 Antokton – Të gjitha të drejtat të rezervuara.</p>
+  </footer>
+  <script src="js/script.js"></script>
+</body>
+</html>
